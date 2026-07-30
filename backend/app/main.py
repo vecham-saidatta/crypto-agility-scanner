@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.repository import router as repository_router
 from app.core.config import settings
 from app.db.base import Base
@@ -11,6 +11,17 @@ from app.models.repository import Repository
 app = FastAPI(
     title=settings.APP_NAME,
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(repository_router)
 
 # Create all tables
