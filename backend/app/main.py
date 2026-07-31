@@ -4,7 +4,7 @@ from app.api.repository import router as repository_router
 from app.core.config import settings
 from app.db.base import Base
 from app.db.database import engine
-
+from app.api import scan
 # Import models so SQLAlchemy knows about them
 from app.models.repository import Repository
 
@@ -23,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(repository_router)
+app.include_router(scan.router)
 
 # Create all tables
 Base.metadata.create_all(bind=engine)

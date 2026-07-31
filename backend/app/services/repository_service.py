@@ -5,6 +5,9 @@ from app.schemas.repository import (
     RepositoryCreate,
     RepositoryUpdate,
 )
+from pathlib import Path
+from app.providers.provider_factory import ProviderFactory
+from app.services.workspace_service import WorkspaceService
 
 
 def create_repository(
@@ -56,3 +59,47 @@ def delete_repository(
 ):
     db.delete(repository)
     db.commit()
+
+def prepare_repository_for_scan(
+    repository_url: str,
+) -> Path:
+    """
+    Prepare a repository for scanning.
+
+    Steps:
+    1. Create workspace.
+    2. Select provider.
+    3. Normalize URL.
+    4. Validate URL.
+    5. Clone repository.
+    6. Return local repository path.
+    """
+
+    provider = ProviderFactory.get_provider(repository_url)
+
+    repository_url = provider.normalize_repository_url(repository_url)
+
+    if not provider.validate_repository_url(repository_url):
+        raise ValueError("Invalid repository URL.")
+
+    workspace_service = WorkspaceService()
+
+    workspace_path = workspace_service.create_scan_workspace()
+
+    repository_url = provider.normalize_repository_url(
+        repository_url
+    )
+
+    if not provider.validate_repository_url(
+        repository_url
+    ):
+        raise ValueError(
+            "Invalid repository URL."
+        )
+
+    repository_path = provider.clone_repository(
+        repository_url,
+        workspace_path,
+    )
+
+    return repository_path
