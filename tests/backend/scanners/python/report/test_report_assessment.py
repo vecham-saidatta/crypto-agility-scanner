@@ -136,3 +136,139 @@ def test_report_assesses_weak_rsa():
         assessment["classical_security"]["risk"]
         == "HIGH"
     )
+
+def test_report_contains_ecdsa_migration_target():
+
+    finding = Finding(
+        algorithm="ECDSA",
+        file_path="example.py",
+        line_number=10,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="ECDSA detected.",
+        recommendation="Migration required.",
+        reference="NIST FIPS 186-5",
+        metadata={
+            "hash_algorithm": "SHA-256",
+        },
+    )
+
+    report = ReportGenerator().generate(
+        [],
+        [finding],
+    )
+
+    target = (
+        report["findings"][0]
+        ["migration_target"]
+    )
+
+    assert (
+        target["purpose"]
+        == "DIGITAL_SIGNATURE"
+    )
+
+    assert (
+        target["migration_family"]
+        == "POST_QUANTUM_SIGNATURE"
+    )
+
+    assert (
+        target["candidate_algorithm"]
+        == "ML-DSA"
+    )
+
+    assert (
+        target["candidate_standard"]
+        == "NIST FIPS 204"
+    )
+
+def test_report_contains_ecdh_migration_target():
+
+    finding = Finding(
+        algorithm="ECDH",
+        file_path="example.py",
+        line_number=20,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="ECDH detected.",
+        recommendation="Migration required.",
+        reference="NIST SP 800-56A Rev. 3",
+        metadata={
+            "operation": "key_agreement",
+        },
+    )
+
+    report = ReportGenerator().generate(
+        [],
+        [finding],
+    )
+
+    target = (
+        report["findings"][0]
+        ["migration_target"]
+    )
+
+    assert (
+        target["purpose"]
+        == "KEY_ESTABLISHMENT"
+    )
+
+    assert (
+        target["migration_family"]
+        == "POST_QUANTUM_KEM"
+    )
+
+    assert (
+        target["candidate_algorithm"]
+        == "ML-KEM"
+    )
+
+    assert (
+        target["candidate_standard"]
+        == "NIST FIPS 203"
+    )
+
+def test_report_keeps_rsa_target_unresolved():
+
+    finding = Finding(
+        algorithm="RSA",
+        file_path="example.py",
+        line_number=30,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="RSA detected.",
+        recommendation="Migration required.",
+        reference="NIST FIPS 186-5",
+        metadata={
+            "key_size": 2048,
+            "public_exponent": 65537,
+        },
+    )
+
+    report = ReportGenerator().generate(
+        [],
+        [finding],
+    )
+
+    target = (
+        report["findings"][0]
+        ["migration_target"]
+    )
+
+    assert target["purpose"] == "UNKNOWN"
+
+    assert (
+        target["migration_family"]
+        == "UNRESOLVED"
+    )
+
+    assert (
+        target["candidate_algorithm"]
+        is None
+    )
+
+    assert (
+        target["candidate_standard"]
+        is None
+    )

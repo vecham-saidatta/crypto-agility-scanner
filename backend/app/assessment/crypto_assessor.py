@@ -55,3 +55,4 @@ class CryptoAssessor:
         
 
         return None
+

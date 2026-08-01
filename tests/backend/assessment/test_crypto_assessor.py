@@ -257,3 +257,53 @@ def test_assessor_handles_dynamic_ecdsa_hash():
         result.quantum_security.vulnerable
         is True
     )
+
+def test_assessor_routes_ecdh_to_ecdh_policy():
+
+    finding = Finding(
+        algorithm="ECDH",
+        file_path="example.py",
+        line_number=40,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message=(
+            "ECDH key-agreement usage detected."
+        ),
+        recommendation=(
+            "Inventory this ECDH usage for "
+            "post-quantum key-establishment "
+            "migration planning."
+        ),
+        reference="NIST SP 800-56A Rev. 3",
+        metadata={
+            "operation": "key_agreement",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "REVIEW_REQUIRED"
+    )
+
+    assert (
+        result.quantum_security.status
+        == "QUANTUM_VULNERABLE"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert result.migration.required is True
+
+    assert (
+        result.migration.priority
+        == "HIGH"
+    )

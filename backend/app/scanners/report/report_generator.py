@@ -4,6 +4,7 @@ from app.scanners.findings import Finding
 from app.scanners.report.report_summary import ReportSummary
 from app.scanners.report.risk_calculator import RiskCalculator
 from app.assessment.crypto_assessor import CryptoAssessor
+from app.assessment.migration_planner import MigrationPlanner
 
 
 class ReportGenerator:
@@ -17,6 +18,8 @@ class ReportGenerator:
         findings: list[Finding],
     ) -> dict:
 
+        assessor = CryptoAssessor()
+        migration_planner = MigrationPlanner()
         # 1. Generate existing summary
         summary = ReportSummary().generate(
             files,
@@ -70,7 +73,6 @@ class ReportGenerator:
             )
 
         # 7. Create crypto assessment engine
-        assessor = CryptoAssessor()
 
         quantum_vulnerable_count = 0
         migration_required_count = 0
@@ -82,6 +84,12 @@ class ReportGenerator:
 
             assessment = assessor.assess(
                 finding
+            )
+
+            migration_target = (
+                migration_planner.plan(
+                    finding
+                )
             )
 
             assessment_data = None
@@ -160,7 +168,20 @@ class ReportGenerator:
                         ),
                     },
                 }
-
+            migration_target_data = {
+                "purpose": (
+                    migration_target.purpose.value
+                ),
+                "migration_family": (
+                    migration_target.migration_family
+                ),
+                "candidate_standard": (
+                    migration_target.candidate_standard
+                ),
+                "candidate_algorithm": (
+                    migration_target.candidate_algorithm
+                ),
+            }
             report_findings.append(
                 {
                     "algorithm": finding.algorithm,
@@ -175,6 +196,7 @@ class ReportGenerator:
                     "reference": finding.reference,
                     "metadata": finding.metadata,
                     "assessment": assessment_data,
+                    "migration_target": migration_target_data,
                 }
             )
 
