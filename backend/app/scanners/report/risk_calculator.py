@@ -1,4 +1,5 @@
 from app.scanners.findings import Finding
+from app.scanners.severity import Severity
 
 
 class RiskCalculator:
@@ -12,26 +13,28 @@ class RiskCalculator:
     ) -> dict:
 
         severity_count = {
-            "CRITICAL": 0,
-            "HIGH": 0,
-            "MEDIUM": 0,
-            "LOW": 0,
+            severity.value: 0
+            for severity in Severity
         }
 
         for finding in findings:
-            severity_count[finding.severity] += 1
+            severity = finding.severity
+            severity_count[severity] = severity_count.get(severity, 0) + 1
 
-        if severity_count["CRITICAL"] > 0:
-            overall_risk = "CRITICAL"
+        if severity_count[Severity.CRITICAL.value]:
+            overall_risk = Severity.CRITICAL.value
 
-        elif severity_count["HIGH"] > 0:
-            overall_risk = "HIGH"
+        elif severity_count[Severity.HIGH.value]:
+            overall_risk = Severity.HIGH.value
 
-        elif severity_count["MEDIUM"] > 0:
-            overall_risk = "MEDIUM"
+        elif severity_count[Severity.MEDIUM.value]:
+            overall_risk = Severity.MEDIUM.value
+
+        elif severity_count[Severity.LOW.value]:
+            overall_risk = Severity.LOW.value
 
         else:
-            overall_risk = "LOW"
+            overall_risk = Severity.INFO.value
 
         return {
             "overall_risk": overall_risk,

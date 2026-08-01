@@ -1,25 +1,22 @@
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
 from app.scanners.severity import Severity
 
-class MD5Rule(BaseCryptoRule):
-    """
-    Detects MD5 usage.
-    """
 
-    algorithm = "MD5"
+class DESRule(BaseCryptoRule):
 
-    function_name = "md5"
+    algorithm = "DES"
 
-    allowed_modules = ("hashlib",)
+    function_name = "DES"
 
     severity = Severity.HIGH
-
+    
     status = "DEPRECATED"
 
-    message = "MD5 detected."
+    message = "DES detected."
 
     recommendation = (
-        "Replace MD5 with SHA-256 or SHA-3."
+        "Migrate DES usage to an approved modern "
+        "authenticated encryption design."
     )
 
     reference = "NIST SP 800-131A"

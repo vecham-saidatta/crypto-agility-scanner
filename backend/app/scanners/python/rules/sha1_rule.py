@@ -1,5 +1,5 @@
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-
+from app.scanners.severity import Severity
 
 class SHA1Rule(BaseCryptoRule):
     """
@@ -10,7 +10,11 @@ class SHA1Rule(BaseCryptoRule):
 
     function_name = "sha1"
 
-    severity = "HIGH"
+    allowed_modules = ("hashlib",)
+
+    severity = Severity.HIGH
+
+    status = "DEPRECATED"
 
     message = "SHA-1 detected."
 

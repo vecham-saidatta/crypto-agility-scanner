@@ -12,6 +12,8 @@ class Finding:
 
     severity: str
 
+    status: str
+
     message: str
 
     recommendation: str

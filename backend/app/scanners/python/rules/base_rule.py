@@ -6,7 +6,7 @@ from app.scanners.findings import Finding
 
 class BaseRule(ABC):
     """
-    Base class for Python detection rules.
+    Base interface for Python scanner rules.
     """
 
     @abstractmethod
@@ -14,5 +14,12 @@ class BaseRule(ABC):
         self,
         node: ast.AST,
         file_path: str,
+        imports: dict[
+            str,
+            list[tuple[int, str | None]],
+        ],
     ) -> list[Finding]:
+        """
+        Check an AST node and return security findings.
+        """
         pass
