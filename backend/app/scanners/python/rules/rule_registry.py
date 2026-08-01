@@ -9,6 +9,7 @@ from app.scanners.python.rules.des_rule import DESRule
 from app.scanners.python.rules.triple_des_rule import TripleDESRule
 from app.scanners.python.rules.rc4_rule import RC4Rule
 from app.scanners.python.rules.chacha20_rule import ChaCha20Rule
+from app.scanners.python.rules.rsa_rule import RSARule
 class RuleRegistry:
 
     @staticmethod
@@ -21,9 +22,12 @@ class RuleRegistry:
             SHA256Rule(),
             SHA384Rule(),
             SHA512Rule(),
+
             AESRule(),
             DESRule(),
             TripleDESRule(),
             RC4Rule(),
             ChaCha20Rule(),
+            
+            RSARule(),
         ]
