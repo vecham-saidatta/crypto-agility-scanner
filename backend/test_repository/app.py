@@ -63,3 +63,5 @@ ecc_private_key = ec.generate_private_key(
 ecdsa_algorithm = ec.ECDSA(
     hashes.SHA256()
 )
+
+ecdh_algorithm = ec.ECDH()

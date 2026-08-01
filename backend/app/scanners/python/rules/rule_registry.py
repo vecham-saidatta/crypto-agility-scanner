@@ -14,6 +14,9 @@ from app.scanners.python.rules.ecc_rule import ECCRule
 from app.scanners.python.rules.ecdsa_rule import (
     ECDSARule,
 )
+from app.scanners.python.rules.ecdh_rule import (
+    ECDHRule,
+)
 class RuleRegistry:
 
     @staticmethod
@@ -37,4 +40,5 @@ class RuleRegistry:
             RSARule(),
             ECCRule(),
             ECDSARule(),
+            ECDHRule(),
         ]

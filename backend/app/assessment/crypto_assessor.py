@@ -7,7 +7,9 @@ from app.scanners.findings import Finding
 from app.assessment.policies.ecdsa_policy import (
     ECDSAPolicy,
 )
-
+from app.assessment.policies.ecdh_policy import (
+    ECDHPolicy,
+)
 class CryptoAssessor:
     """
     Selects the appropriate cryptographic policy
@@ -47,6 +49,9 @@ class CryptoAssessor:
             return ECDSAPolicy().assess(
                 hash_algorithm=hash_algorithm
             )
+        if finding.algorithm == "ECDH":
+
+            return ECDHPolicy().assess()
         
 
         return None
