@@ -112,3 +112,148 @@ def test_assessor_ignores_unsupported_algorithm():
     )
 
     assert result is None
+
+def test_assessor_routes_ecc_to_ecc_policy():
+
+    finding = Finding(
+        algorithm="ECC",
+        file_path="example.py",
+        line_number=20,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message=(
+            "Elliptic-curve key generation detected."
+        ),
+        recommendation=(
+            "PQC migration planning required."
+        ),
+        reference="",
+        metadata={
+            "curve": "SECP256R1",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "ACCEPTABLE"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert (
+        result.migration.required
+        is True
+    )
+
+def test_assessor_handles_unknown_ecc_curve():
+
+    finding = Finding(
+        algorithm="ECC",
+        file_path="example.py",
+        line_number=20,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message=(
+            "Elliptic-curve key generation detected."
+        ),
+        recommendation=(
+            "PQC migration planning required."
+        ),
+        reference="",
+        metadata={
+            "curve": None,
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "UNKNOWN"
+    )
+
+def test_assessor_routes_ecdsa_to_ecdsa_policy():
+
+    finding = Finding(
+        algorithm="ECDSA",
+        file_path="example.py",
+        line_number=30,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="ECDSA signature usage detected.",
+        recommendation=(
+            "PQC signature migration required."
+        ),
+        reference="NIST FIPS 186-5",
+        metadata={
+            "hash_algorithm": "SHA-256",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "ACCEPTABLE"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert (
+        result.migration.required
+        is True
+    )
+
+def test_assessor_handles_dynamic_ecdsa_hash():
+
+    finding = Finding(
+        algorithm="ECDSA",
+        file_path="example.py",
+        line_number=30,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="ECDSA signature usage detected.",
+        recommendation=(
+            "PQC signature migration required."
+        ),
+        reference="NIST FIPS 186-5",
+        metadata={
+            "hash_algorithm": None,
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "UNKNOWN"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )

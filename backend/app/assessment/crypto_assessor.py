@@ -2,8 +2,11 @@ from app.assessment.assessment_result import (
     CryptoAssessmentResult,
 )
 from app.assessment.policies.rsa_policy import RSAPolicy
+from app.assessment.policies.ecc_policy import ECCPolicy
 from app.scanners.findings import Finding
-
+from app.assessment.policies.ecdsa_policy import (
+    ECDSAPolicy,
+)
 
 class CryptoAssessor:
     """
@@ -22,10 +25,28 @@ class CryptoAssessor:
                 "key_size"
             )
 
-            policy = RSAPolicy()
-
-            return policy.assess(
+            return RSAPolicy().assess(
                 key_size=key_size
             )
+
+        if finding.algorithm == "ECC":
+
+            curve = finding.metadata.get(
+                "curve"
+            )
+
+            return ECCPolicy().assess(
+                curve=curve
+            )
+        if finding.algorithm == "ECDSA":
+
+            hash_algorithm = finding.metadata.get(
+                "hash_algorithm"
+            )
+
+            return ECDSAPolicy().assess(
+                hash_algorithm=hash_algorithm
+            )
+        
 
         return None

@@ -23,7 +23,7 @@ class RSARule(BaseCryptoRule):
         "cryptography migration planning."
     )
 
-    reference = "NIST FIPS 203"
+    reference = "NIST FIPS 186-5"
 
     def check(
         self,

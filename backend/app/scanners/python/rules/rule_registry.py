@@ -10,6 +10,10 @@ from app.scanners.python.rules.triple_des_rule import TripleDESRule
 from app.scanners.python.rules.rc4_rule import RC4Rule
 from app.scanners.python.rules.chacha20_rule import ChaCha20Rule
 from app.scanners.python.rules.rsa_rule import RSARule
+from app.scanners.python.rules.ecc_rule import ECCRule
+from app.scanners.python.rules.ecdsa_rule import (
+    ECDSARule,
+)
 class RuleRegistry:
 
     @staticmethod
@@ -28,6 +32,9 @@ class RuleRegistry:
             TripleDESRule(),
             RC4Rule(),
             ChaCha20Rule(),
-            
+            # existing hash rules
+            # existing symmetric rules
             RSARule(),
+            ECCRule(),
+            ECDSARule(),
         ]

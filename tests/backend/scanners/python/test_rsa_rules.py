@@ -142,3 +142,38 @@ private_key = rsa.generate_private_key(
         rsa_finding.metadata["public_exponent"]
         == 65537
     )
+
+def test_rsa_uses_correct_nist_reference(
+    tmp_path,
+):
+
+    source = """
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048,
+)
+"""
+
+    test_file = tmp_path / "rsa_reference.py"
+
+    test_file.write_text(
+        source,
+        encoding="utf-8",
+    )
+
+    findings = PythonScanner().scan(
+        [test_file]
+    )
+
+    rsa_finding = next(
+        finding
+        for finding in findings
+        if finding.algorithm == "RSA"
+    )
+
+    assert (
+        rsa_finding.reference
+        == "NIST FIPS 186-5"
+    )
