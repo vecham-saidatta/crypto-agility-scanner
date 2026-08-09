@@ -12,8 +12,34 @@ class GitHubProvider(BaseProvider):
     GitHub repository provider.
     """
 
-    def validate_repository_url(self, repository_url: str) -> bool:
-        return repository_url.startswith("https://github.com/")
+    def validate_repository_url(
+        self,
+        repository_url: str,
+    ) -> bool:
+
+        repository_url = repository_url.strip()
+
+        if not repository_url.startswith(
+            "https://github.com/"
+        ):
+            return False
+
+        repository_path = repository_url[
+            len("https://github.com/"):
+        ]
+
+        if repository_path.endswith(".git"):
+            repository_path = (
+                repository_path[:-4]
+            )
+
+        parts = [
+            part
+            for part in repository_path.split("/")
+            if part
+        ]
+
+        return len(parts) == 2
 
     def normalize_repository_url(self, repository_url: str) -> str:
         repository_url = repository_url.strip()
