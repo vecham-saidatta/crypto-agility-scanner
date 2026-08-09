@@ -307,3 +307,163 @@ def test_assessor_routes_ecdh_to_ecdh_policy():
         result.migration.priority
         == "HIGH"
     )
+
+def test_assessor_routes_rsa_signature_to_policy():
+
+    finding = Finding(
+        algorithm="RSA-SIGNATURE",
+        file_path="example.py",
+        line_number=10,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="RSA signature detected.",
+        recommendation="Migration required.",
+        reference="NIST FIPS 186-5",
+        metadata={
+            "operation": "SIGN",
+            "padding": "PSS",
+            "hash_algorithm": "SHA-256",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "ACCEPTABLE"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert result.migration.required is True
+
+def test_assessor_handles_weak_rsa_signature_hash():
+
+    finding = Finding(
+        algorithm="RSA-SIGNATURE",
+        file_path="example.py",
+        line_number=20,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message="RSA signature detected.",
+        recommendation="Migration required.",
+        reference="NIST FIPS 186-5",
+        metadata={
+            "operation": "SIGN",
+            "padding": "PSS",
+            "hash_algorithm": "SHA-1",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "DISALLOWED"
+    )
+
+    assert (
+        result.classical_security.risk
+        == "HIGH"
+    )
+
+def test_assessor_routes_rsa_encryption_to_policy():
+
+    finding = Finding(
+        algorithm="RSA-ENCRYPTION",
+        file_path="example.py",
+        line_number=10,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message=(
+            "RSA encryption/decryption usage detected."
+        ),
+        recommendation=(
+            "Inventory this RSA encryption usage."
+        ),
+        reference="NIST SP 800-56B Rev. 2",
+        metadata={
+            "operation": "ENCRYPT",
+            "padding": "OAEP",
+            "hash_algorithm": "SHA-256",
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "ACCEPTABLE"
+    )
+
+    assert (
+        result.classical_security.risk
+        == "LOW"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert result.migration.required is True
+
+def test_assessor_handles_rsa_pkcs1v15_encryption():
+
+    finding = Finding(
+        algorithm="RSA-ENCRYPTION",
+        file_path="example.py",
+        line_number=20,
+        severity="INFO",
+        status="QUANTUM_VULNERABLE",
+        message=(
+            "RSA encryption/decryption usage detected."
+        ),
+        recommendation=(
+            "Inventory this RSA encryption usage."
+        ),
+        reference="NIST SP 800-56B Rev. 2",
+        metadata={
+            "operation": "DECRYPT",
+            "padding": "PKCS1v15",
+            "hash_algorithm": None,
+        },
+    )
+
+    result = CryptoAssessor().assess(
+        finding
+    )
+
+    assert result is not None
+
+    assert (
+        result.classical_security.status
+        == "REVIEW_REQUIRED"
+    )
+
+    assert (
+        result.classical_security.risk
+        == "MEDIUM"
+    )
+
+    assert (
+        result.quantum_security.vulnerable
+        is True
+    )
+
+    assert result.migration.required is True

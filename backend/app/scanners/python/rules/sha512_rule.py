@@ -1,17 +1,21 @@
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
 from app.scanners.severity import Severity
-
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 class SHA512Rule(BaseCryptoRule):
 
-    algorithm = "SHA-512"
+    algorithm = CryptoAlgorithm.SHA512
 
     function_name = "sha512"
 
     allowed_modules = ("hashlib",)
 
-    severity = Severity.INFO
+    severity = FindingSeverity.INFO
 
-    status = "APPROVED"
+    status = CryptoStatus.APPROVED
 
     message = "SHA-512 detected."
 

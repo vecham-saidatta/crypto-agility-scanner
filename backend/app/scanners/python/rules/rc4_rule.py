@@ -1,10 +1,19 @@
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-from app.scanners.severity import Severity
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class RC4Rule(BaseCryptoRule):
+    """
+    Detects RC4/ARC4 usage.
+    """
 
-    algorithm = "RC4"
+    algorithm = CryptoAlgorithm.RC4
 
     function_name = "ARC4"
 
@@ -12,9 +21,9 @@ class RC4Rule(BaseCryptoRule):
         "cryptography.hazmat.primitives.ciphers.algorithms",
     )
 
-    severity = Severity.HIGH
+    severity = FindingSeverity.HIGH
 
-    status = "DEPRECATED"
+    status = CryptoStatus.DEPRECATED
 
     message = "RC4/ARC4 detected."
 

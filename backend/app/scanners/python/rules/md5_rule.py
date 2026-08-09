@@ -1,20 +1,27 @@
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-from app.scanners.severity import Severity
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
+
 
 class MD5Rule(BaseCryptoRule):
     """
     Detects MD5 usage.
     """
 
-    algorithm = "MD5"
+    algorithm = CryptoAlgorithm.MD5
 
     function_name = "md5"
 
     allowed_modules = ("hashlib",)
 
-    severity = Severity.HIGH
+    severity = FindingSeverity.HIGH
 
-    status = "DEPRECATED"
+    status = CryptoStatus.DEPRECATED
 
     message = "MD5 detected."
 

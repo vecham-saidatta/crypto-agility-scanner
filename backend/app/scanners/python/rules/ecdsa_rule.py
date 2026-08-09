@@ -1,7 +1,14 @@
 import ast
 
 from app.scanners.findings import Finding
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class ECDSARule(BaseCryptoRule):
@@ -10,11 +17,11 @@ class ECDSARule(BaseCryptoRule):
     and extracts the configured hash algorithm.
     """
 
-    algorithm = "ECDSA"
+    algorithm = CryptoAlgorithm.ECDSA
 
-    severity = "INFO"
+    severity = FindingSeverity.INFO
 
-    status = "QUANTUM_VULNERABLE"
+    status = CryptoStatus.QUANTUM_VULNERABLE
 
     message = "ECDSA signature usage detected."
 
@@ -133,11 +140,21 @@ class ECDSARule(BaseCryptoRule):
     ) -> str:
 
         names = {
-            "SHA1": "SHA-1",
-            "SHA224": "SHA-224",
-            "SHA256": "SHA-256",
-            "SHA384": "SHA-384",
-            "SHA512": "SHA-512",
+            "SHA1": (
+                CryptoAlgorithm.SHA1.value
+            ),
+            "SHA224": (
+                CryptoAlgorithm.SHA224.value
+            ),
+            "SHA256": (
+                CryptoAlgorithm.SHA256.value
+            ),
+            "SHA384": (
+                CryptoAlgorithm.SHA384.value
+            ),
+            "SHA512": (
+                CryptoAlgorithm.SHA512.value
+            ),
         }
 
         return names.get(

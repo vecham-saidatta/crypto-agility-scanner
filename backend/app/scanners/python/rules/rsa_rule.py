@@ -2,19 +2,23 @@ import ast
 
 from app.scanners.findings import Finding
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 class RSARule(BaseCryptoRule):
 
-    algorithm = "RSA"
+    algorithm = CryptoAlgorithm.RSA
     function_name = "generate_private_key"
 
     allowed_modules = (
         "cryptography.hazmat.primitives.asymmetric.rsa",
     )
 
-    severity = "INFO"
-    status = "QUANTUM_VULNERABLE"
+    severity = FindingSeverity.INFO
+    status = CryptoStatus.QUANTUM_VULNERABLE
 
     message = "RSA key generation detected."
 

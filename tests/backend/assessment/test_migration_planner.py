@@ -138,3 +138,62 @@ def test_aes_does_not_receive_pqc_target():
     )
 
     assert target.candidate_algorithm is None
+
+def test_rsa_signature_maps_to_ml_dsa():
+
+    finding = make_finding(
+        "RSA-SIGNATURE"
+    )
+
+    target = MigrationPlanner().plan(
+        finding
+    )
+
+    assert (
+        target.purpose
+        == CryptoPurpose.DIGITAL_SIGNATURE
+    )
+
+    assert (
+        target.migration_family
+        == "POST_QUANTUM_SIGNATURE"
+    )
+
+    assert (
+        target.candidate_algorithm
+        == "ML-DSA"
+    )
+
+    assert (
+        target.candidate_standard
+        == "NIST FIPS 204"
+    )
+def test_rsa_encryption_maps_to_ml_kem():
+
+    finding = make_finding(
+        "RSA-ENCRYPTION"
+    )
+
+    target = MigrationPlanner().plan(
+        finding
+    )
+
+    assert (
+        target.purpose
+        == CryptoPurpose.KEY_ESTABLISHMENT
+    )
+
+    assert (
+        target.migration_family
+        == "POST_QUANTUM_KEM"
+    )
+
+    assert (
+        target.candidate_algorithm
+        == "ML-KEM"
+    )
+
+    assert (
+        target.candidate_standard
+        == "NIST FIPS 203"
+    )

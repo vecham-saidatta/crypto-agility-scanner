@@ -1,20 +1,29 @@
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-from app.scanners.severity import Severity
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class TripleDESRule(BaseCryptoRule):
+    """
+    Detects Triple DES usage.
+    """
 
-    algorithm = "TripleDES"
-    
+    algorithm = CryptoAlgorithm.TRIPLE_DES
+
     function_name = "TripleDES"
 
     allowed_modules = (
         "cryptography.hazmat.primitives.ciphers.algorithms",
     )
 
-    severity = Severity.HIGH
+    severity = FindingSeverity.HIGH
 
-    status = "DEPRECATED"
+    status = CryptoStatus.DEPRECATED
 
     message = "Triple DES detected."
 

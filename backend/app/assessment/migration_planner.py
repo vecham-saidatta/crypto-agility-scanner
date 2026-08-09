@@ -20,7 +20,9 @@ class MigrationPlanner:
         finding: Finding,
     ) -> MigrationTarget:
 
+        # ECDSA digital signatures
         if finding.algorithm == "ECDSA":
+
             return MigrationTarget(
                 purpose=(
                     CryptoPurpose.DIGITAL_SIGNATURE
@@ -34,7 +36,9 @@ class MigrationPlanner:
                 candidate_algorithm="ML-DSA",
             )
 
+        # ECDH key establishment
         if finding.algorithm == "ECDH":
+
             return MigrationTarget(
                 purpose=(
                     CryptoPurpose.KEY_ESTABLISHMENT
@@ -48,6 +52,36 @@ class MigrationPlanner:
                 candidate_algorithm="ML-KEM",
             )
 
+        # RSA digital signatures
+        if finding.algorithm == "RSA-SIGNATURE":
+
+            return MigrationTarget(
+                purpose=(
+                    CryptoPurpose.DIGITAL_SIGNATURE
+                ),
+                migration_family=(
+                    "POST_QUANTUM_SIGNATURE"
+                ),
+                candidate_standard=(
+                    "NIST FIPS 204"
+                ),
+                candidate_algorithm="ML-DSA",
+            )
+        if finding.algorithm == "RSA-ENCRYPTION":
+
+            return MigrationTarget(
+                purpose=(
+                    CryptoPurpose.KEY_ESTABLISHMENT
+                ),
+                migration_family=(
+                    "POST_QUANTUM_KEM"
+                ),
+                candidate_standard=(
+                    "NIST FIPS 203"
+                ),
+                candidate_algorithm="ML-KEM",
+            )
+        # Unknown or insufficient usage context
         return MigrationTarget(
             purpose=CryptoPurpose.UNKNOWN,
             migration_family="UNRESOLVED",

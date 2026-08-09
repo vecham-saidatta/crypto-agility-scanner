@@ -1,18 +1,22 @@
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
 from app.scanners.severity import Severity
-
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 class SHA384Rule(BaseCryptoRule):
 
-    algorithm = "SHA-384"
+    algorithm = CryptoAlgorithm.SHA384
     
     function_name = "sha384"
 
     allowed_modules = ("hashlib",)
 
-    severity = Severity.INFO
+    severity = FindingSeverity.INFO
 
-    status = "APPROVED"
+    status = CryptoStatus.APPROVED
 
     message = "SHA-384 detected."
 

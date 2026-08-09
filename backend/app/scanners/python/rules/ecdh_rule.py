@@ -4,6 +4,12 @@ from app.scanners.findings import Finding
 from app.scanners.python.rules.base_crypto_rule import (
     BaseCryptoRule,
 )
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    CryptoOperation,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class ECDHRule(BaseCryptoRule):
@@ -12,11 +18,11 @@ class ECDHRule(BaseCryptoRule):
     key-agreement usage.
     """
 
-    algorithm = "ECDH"
+    algorithm = CryptoAlgorithm.ECDH
 
-    severity = "INFO"
+    severity = FindingSeverity.INFO
 
-    status = "QUANTUM_VULNERABLE"
+    status = CryptoStatus.QUANTUM_VULNERABLE
 
     message = "ECDH key-agreement usage detected."
 

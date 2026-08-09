@@ -1,20 +1,29 @@
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-from app.scanners.severity import Severity
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class AESRule(BaseCryptoRule):
+    """
+    Detects AES usage.
+    """
 
-    algorithm = "AES"
-    
+    algorithm = CryptoAlgorithm.AES
+
     function_name = "AES"
 
     allowed_modules = (
         "cryptography.hazmat.primitives.ciphers.algorithms",
     )
 
-    severity = Severity.INFO
+    severity = FindingSeverity.INFO
 
-    status = "APPROVED"
+    status = CryptoStatus.APPROVED
 
     message = "AES detected."
 

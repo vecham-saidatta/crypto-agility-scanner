@@ -1,10 +1,19 @@
-from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-from app.scanners.severity import Severity
+from app.scanners.python.rules.base_crypto_rule import (
+    BaseCryptoRule,
+)
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 
 class ChaCha20Rule(BaseCryptoRule):
+    """
+    Detects ChaCha20 usage.
+    """
 
-    algorithm = "ChaCha20"
+    algorithm = CryptoAlgorithm.CHACHA20
 
     function_name = "ChaCha20"
 
@@ -12,9 +21,9 @@ class ChaCha20Rule(BaseCryptoRule):
         "cryptography.hazmat.primitives.ciphers.algorithms",
     )
 
-    severity = Severity.INFO
+    severity = FindingSeverity.INFO
 
-    status = "APPROVED"
+    status = CryptoStatus.APPROVED
 
     message = "ChaCha20 detected."
 

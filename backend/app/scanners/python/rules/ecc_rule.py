@@ -2,7 +2,11 @@ import ast
 
 from app.scanners.findings import Finding
 from app.scanners.python.rules.base_crypto_rule import BaseCryptoRule
-
+from app.taxonomy.crypto_taxonomy import (
+    CryptoAlgorithm,
+    FindingSeverity,
+    CryptoStatus,
+)
 
 class ECCRule(BaseCryptoRule):
     """
@@ -10,7 +14,7 @@ class ECCRule(BaseCryptoRule):
     and extracts the selected curve.
     """
 
-    algorithm = "ECC"
+    algorithm = CryptoAlgorithm.ECC
 
     function_name = "generate_private_key"
 
@@ -18,9 +22,9 @@ class ECCRule(BaseCryptoRule):
         "cryptography.hazmat.primitives.asymmetric.ec",
     )
 
-    severity = "INFO"
+    severity = FindingSeverity.INFO
 
-    status = "QUANTUM_VULNERABLE"
+    status = CryptoStatus.QUANTUM_VULNERABLE
 
     message = "Elliptic-curve key generation detected."
 

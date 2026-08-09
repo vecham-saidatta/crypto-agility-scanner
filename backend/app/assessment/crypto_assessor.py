@@ -10,6 +10,14 @@ from app.assessment.policies.ecdsa_policy import (
 from app.assessment.policies.ecdh_policy import (
     ECDHPolicy,
 )
+from app.assessment.policies.rsa_signature_policy import (
+    RSASignaturePolicy,
+)
+from app.assessment.policies.rsa_encryption_policy import (
+    RSAEncryptionPolicy,
+)
+
+
 class CryptoAssessor:
     """
     Selects the appropriate cryptographic policy
@@ -31,6 +39,36 @@ class CryptoAssessor:
                 key_size=key_size
             )
 
+        if finding.algorithm == "RSA-SIGNATURE":
+
+            hash_algorithm = finding.metadata.get(
+                "hash_algorithm"
+            )
+
+            padding = finding.metadata.get(
+                "padding"
+            )
+
+            return RSASignaturePolicy().assess(
+                hash_algorithm=hash_algorithm,
+                padding=padding,
+            )
+
+        if finding.algorithm == "RSA-ENCRYPTION":
+
+            padding = finding.metadata.get(
+                "padding"
+            )
+
+            hash_algorithm = finding.metadata.get(
+                "hash_algorithm"
+            )
+
+            return RSAEncryptionPolicy().assess(
+                padding=padding,
+                hash_algorithm=hash_algorithm,
+            )
+
         if finding.algorithm == "ECC":
 
             curve = finding.metadata.get(
@@ -40,6 +78,7 @@ class CryptoAssessor:
             return ECCPolicy().assess(
                 curve=curve
             )
+
         if finding.algorithm == "ECDSA":
 
             hash_algorithm = finding.metadata.get(
@@ -49,10 +88,9 @@ class CryptoAssessor:
             return ECDSAPolicy().assess(
                 hash_algorithm=hash_algorithm
             )
+
         if finding.algorithm == "ECDH":
 
             return ECDHPolicy().assess()
-        
 
         return None
-

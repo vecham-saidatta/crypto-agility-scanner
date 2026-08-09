@@ -17,6 +17,12 @@ from app.scanners.python.rules.ecdsa_rule import (
 from app.scanners.python.rules.ecdh_rule import (
     ECDHRule,
 )
+from app.scanners.python.rules.rsa_signature_rule import (
+    RSASignatureRule,
+)
+from app.scanners.python.rules.rsa_encryption_rule import (
+    RSAEncryptionRule,
+)
 class RuleRegistry:
 
     @staticmethod
@@ -38,7 +44,10 @@ class RuleRegistry:
             # existing hash rules
             # existing symmetric rules
             RSARule(),
+            RSASignatureRule(),
+            RSAEncryptionRule(),
             ECCRule(),
             ECDSARule(),
             ECDHRule(),
+
         ]
