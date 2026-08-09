@@ -1,5 +1,6 @@
 from pathlib import Path
 import uuid
+import shutil
 
 
 class WorkspaceService:
@@ -27,3 +28,37 @@ class WorkspaceService:
         scan_path.mkdir(parents=True, exist_ok=False)
 
         return scan_path
+    def cleanup_scan_workspace(
+        self,
+        scan_path: Path,
+    ) -> None:
+        """
+        Remove a scan workspace safely.
+
+        The workspace must be located inside
+        the configured workspace root.
+        """
+
+        scan_path = Path(scan_path).resolve()
+        workspace_root = (
+            self.workspace_root.resolve()
+        )
+
+        try:
+            scan_path.relative_to(
+                workspace_root
+            )
+        except ValueError:
+            raise ValueError(
+                "Scan workspace is outside workspace root."
+            )
+
+        if not scan_path.exists():
+            return
+
+        if not scan_path.is_dir():
+            raise ValueError(
+                "Scan workspace must be a directory."
+            )
+
+        shutil.rmtree(scan_path)
