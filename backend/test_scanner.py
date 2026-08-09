@@ -4,7 +4,9 @@ import sys
 from pathlib import Path
 
 from app.services.scanner_service import ScannerService
-
+from app.services.repository_resolver import (
+    RepositoryResolver,
+)
 
 def print_terminal_report(report: dict) -> None:
     summary = report["summary"]
@@ -99,6 +101,7 @@ def get_exit_code(
 
     return 0
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Crypto Agility Scanner"
@@ -131,9 +134,22 @@ def main():
 
     args = parser.parse_args()
 
-    repository_path = Path(
-        args.repository
-    )
+    try:
+        repository_path = (
+            RepositoryResolver.resolve(
+                args.repository
+            )
+        )
+    except (
+        ValueError,
+        RuntimeError,
+        Exception,
+    ) as exc:
+        print(
+            f"Error: {exc}",
+            file=sys.stderr,
+        )
+        return 2
 
     if not repository_path.exists():
         parser.error(
