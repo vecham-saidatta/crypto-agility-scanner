@@ -121,6 +121,13 @@ def main():
             "Default: terminal."
         ),
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help=(
+            "Write the JSON report to a file."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -155,12 +162,27 @@ def main():
     )
 
     if args.format == "json":
-        print(
-            json.dumps(
-                report,
-                indent=4,
-            )
+
+        output = json.dumps(
+            report,
+            indent=4,
         )
+
+        if args.output is not None:
+
+            args.output.write_text(
+                output,
+                encoding="utf-8",
+            )
+
+            print(
+                f"Report written to: "
+                f"{args.output}"
+            )
+
+        else:
+
+            print(output)
 
         return get_exit_code(
             report

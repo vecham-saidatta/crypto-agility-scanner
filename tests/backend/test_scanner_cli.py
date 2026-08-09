@@ -107,3 +107,51 @@ def test_invalid_format_is_rejected():
         "invalid choice"
         in result.stderr
     )
+
+def test_json_output_file_is_created(
+    tmp_path,
+):
+    output_file = (
+        tmp_path / "report.json"
+    )
+
+    result = run_scanner(
+        str(TEST_REPOSITORY),
+        "--format",
+        "json",
+        "--output",
+        str(output_file),
+    )
+
+    assert result.returncode == 1
+
+    assert output_file.exists()
+
+    report = json.loads(
+        output_file.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert (
+        report["risk"]["overall_risk"]
+        == "HIGH"
+    )
+
+
+def test_output_file_does_not_change_exit_code(
+    tmp_path,
+):
+    output_file = (
+        tmp_path / "report.json"
+    )
+
+    result = run_scanner(
+        str(TEST_REPOSITORY),
+        "--format",
+        "json",
+        "--output",
+        str(output_file),
+    )
+
+    assert result.returncode == 1
