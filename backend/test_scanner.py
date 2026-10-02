@@ -159,17 +159,6 @@ def main():
         )
         return 2
 
-    if not repository_path.exists():
-        parser.error(
-            "Repository path does not exist: "
-            f"{repository_path}"
-        )
-
-    if not repository_path.is_dir():
-        parser.error(
-            "Repository path is not a directory: "
-            f"{repository_path}"
-        )
 
     print("=" * 60)
     print("Crypto Agility Scanner")
