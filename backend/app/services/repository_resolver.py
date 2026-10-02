@@ -1,7 +1,9 @@
 from pathlib import Path
 
 from app.services.repository_service import (
+    PreparedRepository,
     prepare_repository_for_scan,
+    prepare_repository_with_workspace,
 )
 
 
@@ -16,9 +18,7 @@ class RepositoryResolver:
         repository: str,
     ) -> Path:
 
-        repository_path = Path(
-            repository
-        )
+        repository_path = Path(repository)
 
         if repository_path.exists():
 
@@ -34,6 +34,38 @@ class RepositoryResolver:
             or repository.startswith("https://")
         ):
             return prepare_repository_for_scan(
+                repository
+            )
+
+        raise ValueError(
+            "Repository path does not exist: "
+            f"{repository}"
+        )
+
+    @staticmethod
+    def resolve_with_workspace(
+        repository: str,
+    ) -> PreparedRepository:
+
+        repository_path = Path(repository)
+
+        if repository_path.exists():
+
+            if not repository_path.is_dir():
+                raise ValueError(
+                    "Repository path must be a directory."
+                )
+
+            return PreparedRepository(
+                repository_path=repository_path,
+                workspace_path=None,
+            )
+
+        if (
+            repository.startswith("http://")
+            or repository.startswith("https://")
+        ):
+            return prepare_repository_with_workspace(
                 repository
             )
 

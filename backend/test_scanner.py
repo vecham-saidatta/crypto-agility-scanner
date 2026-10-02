@@ -4,6 +4,9 @@ import sys
 from pathlib import Path
 
 from app.services.scanner_service import ScannerService
+from app.services.workspace_service import (
+    WorkspaceService,
+)
 from app.services.repository_resolver import (
     RepositoryResolver,
 )
@@ -135,16 +138,21 @@ def main():
     args = parser.parse_args()
 
     try:
-        repository_path = (
-            RepositoryResolver.resolve(
+        resolved_repository = (
+            RepositoryResolver.resolve_with_workspace(
                 args.repository
             )
         )
-    except (
-        ValueError,
-        RuntimeError,
-        Exception,
-    ) as exc:
+
+        repository_path = (
+            resolved_repository.repository_path
+        )
+
+        workspace_path = (
+            resolved_repository.workspace_path
+        )
+
+    except Exception as exc:
         print(
             f"Error: {exc}",
             file=sys.stderr,
@@ -173,44 +181,50 @@ def main():
 
     service = ScannerService()
 
-    report = service.scan(
-        repository_path
-    )
-
-    if args.format == "json":
-
-        output = json.dumps(
-            report,
-            indent=4,
+    try:
+        report = service.scan(
+            repository_path
         )
 
-        if args.output is not None:
+        if args.format == "json":
 
-            args.output.write_text(
-                output,
-                encoding="utf-8",
+            output = json.dumps(
+                report,
+                indent=4,
             )
 
-            print(
-                f"Report written to: "
-                f"{args.output}"
+            if args.output is not None:
+
+                args.output.write_text(
+                    output,
+                    encoding="utf-8",
+                )
+
+                print(
+                    f"Report written to: "
+                    f"{args.output}"
+                )
+
+            else:
+                print(output)
+
+            return get_exit_code(
+                report
             )
 
-        else:
-
-            print(output)
+        print_terminal_report(
+            report
+        )
 
         return get_exit_code(
             report
         )
 
-    print_terminal_report(
-        report
-    )
-
-    return get_exit_code(
-        report
-    )
+    finally:
+        if workspace_path is not None:
+            WorkspaceService().cleanup_scan_workspace(
+                workspace_path
+            )
 
 if __name__ == "__main__":
     sys.exit(

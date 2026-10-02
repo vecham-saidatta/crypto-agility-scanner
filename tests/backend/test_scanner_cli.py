@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import patch
+from backend.test_scanner import main
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -156,3 +157,82 @@ def test_output_file_does_not_change_exit_code(
     )
 
     assert result.returncode == 1
+
+def test_remote_scan_cleans_up_workspace(
+    tmp_path,
+    monkeypatch,
+):
+    workspace_path = (
+        tmp_path / "scan-workspace"
+    )
+
+    repository_path = (
+        workspace_path / "repository"
+    )
+
+    workspace_path.mkdir()
+    repository_path.mkdir()
+
+    class FakeResolvedRepository:
+        pass
+
+    resolved = FakeResolvedRepository()
+    resolved.repository_path = repository_path
+    resolved.workspace_path = workspace_path
+
+    cleanup_calls = []
+
+    class FakeWorkspaceService:
+        def cleanup_scan_workspace(
+            self,
+            path,
+        ):
+            cleanup_calls.append(path)
+
+    fake_report = {
+        "summary": {
+            "files_scanned": 0,
+            "total_findings": 0,
+            "crypto_inventory_count": 0,
+            "security_findings_count": 0,
+            "approved_crypto_count": 0,
+            "quantum_vulnerable_count": 0,
+            "migration_required_count": 0,
+        },
+        "risk": {
+            "overall_risk": "LOW",
+            "severity_count": {},
+        },
+        "algorithm_inventory": {},
+    }
+
+    monkeypatch.setattr(
+        "backend.test_scanner.RepositoryResolver.resolve_with_workspace",
+        lambda repository: resolved,
+    )
+
+    monkeypatch.setattr(
+        "backend.test_scanner.WorkspaceService",
+        FakeWorkspaceService,
+    )
+
+    monkeypatch.setattr(
+        "backend.test_scanner.ScannerService.scan",
+        lambda self, path: fake_report,
+    )
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "test_scanner.py",
+            "https://github.com/example/repository",
+        ],
+    )
+
+    result = main()
+
+    assert result == 0
+
+    assert cleanup_calls == [
+        workspace_path
+    ]
