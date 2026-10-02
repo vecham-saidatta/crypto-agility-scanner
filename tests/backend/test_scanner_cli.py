@@ -236,3 +236,76 @@ def test_remote_scan_cleans_up_workspace(
     assert cleanup_calls == [
         workspace_path
     ]
+
+def test_remote_scan_cleans_up_workspace_when_scan_fails(
+    tmp_path,
+    monkeypatch,
+):
+    workspace_path = (
+        tmp_path / "scan-workspace"
+    )
+
+    repository_path = (
+        workspace_path / "repository"
+    )
+
+    workspace_path.mkdir()
+    repository_path.mkdir()
+
+    class FakeResolvedRepository:
+        pass
+
+    resolved = FakeResolvedRepository()
+    resolved.repository_path = repository_path
+    resolved.workspace_path = workspace_path
+
+    cleanup_calls = []
+
+    class FakeWorkspaceService:
+        def cleanup_scan_workspace(
+            self,
+            path,
+        ):
+            cleanup_calls.append(path)
+
+    def failing_scan(self, path):
+        raise RuntimeError(
+            "Scanner failed"
+        )
+
+    monkeypatch.setattr(
+        "backend.test_scanner.RepositoryResolver.resolve_with_workspace",
+        lambda repository: resolved,
+    )
+
+    monkeypatch.setattr(
+        "backend.test_scanner.WorkspaceService",
+        FakeWorkspaceService,
+    )
+
+    monkeypatch.setattr(
+        "backend.test_scanner.ScannerService.scan",
+        failing_scan,
+    )
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "test_scanner.py",
+            "https://github.com/example/repository",
+        ],
+    )
+
+    try:
+        main()
+        assert False, (
+            "Expected ScannerService.scan "
+            "to raise RuntimeError"
+        )
+
+    except RuntimeError as exc:
+        assert str(exc) == "Scanner failed"
+
+    assert cleanup_calls == [
+        workspace_path
+    ]
