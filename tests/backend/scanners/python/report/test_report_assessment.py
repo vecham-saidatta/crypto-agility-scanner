@@ -272,3 +272,27 @@ def test_report_keeps_rsa_target_unresolved():
         target["candidate_standard"]
         is None
     )
+
+def test_report_contains_cbom():
+
+    finding = create_rsa_finding()
+
+    report = ReportGenerator().generate(
+        files=[Path("example.py")],
+        findings=[finding],
+    )
+
+    cbom = report["cbom"]
+
+    assert len(cbom["components"]) == 1
+
+    component = cbom["components"][0]
+
+    assert component["algorithm"] == "RSA"
+    assert component["file"] == "example.py"
+    assert component["line"] == 10
+
+    assert component["properties"] == {
+        "key_size": 2048,
+        "public_exponent": 65537,
+    }

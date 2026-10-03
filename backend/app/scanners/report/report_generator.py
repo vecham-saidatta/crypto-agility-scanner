@@ -1,11 +1,12 @@
+from dataclasses import asdict
 from pathlib import Path
 
+from app.assessment.crypto_assessor import CryptoAssessor
+from app.assessment.migration_planner import MigrationPlanner
+from app.cbom.converter import CBOMConverter
 from app.scanners.findings import Finding
 from app.scanners.report.report_summary import ReportSummary
 from app.scanners.report.risk_calculator import RiskCalculator
-from app.assessment.crypto_assessor import CryptoAssessor
-from app.assessment.migration_planner import MigrationPlanner
-
 
 class ReportGenerator:
     """
@@ -20,6 +21,10 @@ class ReportGenerator:
 
         assessor = CryptoAssessor()
         migration_planner = MigrationPlanner()
+
+        cbom = CBOMConverter().convert(
+            findings
+        )
         # 1. Generate existing summary
         summary = ReportSummary().generate(
             files,
@@ -45,6 +50,7 @@ class ReportGenerator:
             for finding in findings
             if finding.status == "APPROVED"
         ]
+        
 
         # 5. Add existing crypto metrics
         summary["crypto_inventory_count"] = len(
@@ -58,6 +64,7 @@ class ReportGenerator:
         summary["approved_crypto_count"] = len(
             approved_crypto
         )
+
 
         # 6. Build algorithm inventory
         algorithm_inventory = {}
@@ -217,4 +224,5 @@ class ReportGenerator:
                 algorithm_inventory
             ),
             "findings": report_findings,
+            "cbom": asdict(cbom),
         }
