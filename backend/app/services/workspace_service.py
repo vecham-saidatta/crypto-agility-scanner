@@ -1,7 +1,7 @@
 from pathlib import Path
+import os
 import uuid
 import shutil
-
 
 class WorkspaceService:
     """
@@ -61,4 +61,15 @@ class WorkspaceService:
                 "Scan workspace must be a directory."
             )
 
-        shutil.rmtree(scan_path)
+        def handle_remove_error(
+            function,
+            path,
+            exc_info,
+        ):
+            os.chmod(path, 0o777)
+            function(path)
+
+        shutil.rmtree(
+            scan_path,
+            onerror=handle_remove_error,
+        )

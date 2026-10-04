@@ -27,7 +27,7 @@ def test_scanner_service_generates_complete_report():
 
     assert (
         report["summary"]["total_findings"]
-        == 17
+        == 20
     )
 
     assert (
@@ -37,12 +37,12 @@ def test_scanner_service_generates_complete_report():
 
     assert (
         report["summary"]["quantum_vulnerable_count"]
-        == 4
+        == 7
     )
 
     assert (
         report["summary"]["migration_required_count"]
-        == 4
+        == 7
     )
 
     assert (
@@ -58,6 +58,16 @@ def test_scanner_service_generates_complete_report():
     assert (
         report["algorithm_inventory"]["RSA"]
         == 1
+    )
+
+    assert (
+        report["algorithm_inventory"]["RSA-SIGNATURE"]
+        == 1
+    )
+
+    assert (
+        report["algorithm_inventory"]["RSA-ENCRYPTION"]
+        == 2
     )
 
     assert (

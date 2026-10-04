@@ -204,6 +204,7 @@ def test_remote_scan_cleans_up_workspace(
             "severity_count": {},
         },
         "algorithm_inventory": {},
+        "findings": [],
     }
 
     monkeypatch.setattr(

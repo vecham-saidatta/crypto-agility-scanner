@@ -139,3 +139,46 @@ result = crypto.md5(b"hello")
         finding.algorithm == "MD5"
         for finding in findings
     )
+def test_continues_scanning_after_invalid_python_source(
+    tmp_path,
+):
+
+    broken_file = tmp_path / "broken.py"
+
+    broken_file.write_text(
+        """
+def broken(
+        """,
+        encoding="utf-8",
+    )
+
+    valid_file = tmp_path / "valid.py"
+
+    valid_file.write_text(
+        """
+import hashlib
+
+result = hashlib.md5(b"hello")
+        """,
+        encoding="utf-8",
+    )
+
+    scanner = PythonScanner()
+
+    findings = scanner.scan(
+        [
+            broken_file,
+            valid_file,
+        ]
+    )
+
+    md5_findings = [
+        finding
+        for finding in findings
+        if finding.algorithm == "MD5"
+    ]
+
+    assert len(md5_findings) == 1
+    assert md5_findings[0].file_path == str(
+        valid_file
+    )

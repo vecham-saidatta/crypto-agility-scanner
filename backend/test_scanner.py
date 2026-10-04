@@ -70,7 +70,37 @@ def print_terminal_report(report: dict) -> None:
         print(
             f"{severity}: {count}"
         )
+    print()
+    print("=" * 60)
+    print("Findings")
+    print("=" * 60)
 
+    important_findings = [
+        finding
+        for finding in report["findings"]
+        if finding["severity"] in {"HIGH", "CRITICAL"}
+    ]
+
+    if not important_findings:
+        print("No HIGH or CRITICAL findings.")
+    else:
+        for finding in important_findings:
+            print(
+                f'{finding["severity"]}  '
+                f'{finding["algorithm"]}'
+            )
+            print(
+                f'      {finding["file"]}:'
+                f'{finding["line"]}'
+            )
+            print(
+                f'      {finding["message"]}'
+            )
+            print(
+                f'      Recommendation: '
+                f'{finding["recommendation"]}'
+            )
+            print()
     print()
     print("Algorithm Inventory")
     print("-" * 60)

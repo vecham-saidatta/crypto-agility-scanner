@@ -3,6 +3,7 @@ from cryptography.hazmat.primitives.ciphers import algorithms
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
 from hashlib import md5, sha256
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 data = b"crypto agility"
 md5_hash = hashlib.md5(data).hexdigest()
@@ -65,3 +66,32 @@ ecdsa_algorithm = ec.ECDSA(
 )
 
 ecdh_algorithm = ec.ECDH()
+rsa_signature = rsa_private_key.sign(
+    b"message",
+    padding.PKCS1v15(),
+    hashes.SHA256(),
+)
+
+rsa_public_key = rsa_private_key.public_key()
+
+rsa_ciphertext = rsa_public_key.encrypt(
+    b"message",
+    padding.OAEP(
+        mgf=padding.MGF1(
+            algorithm=hashes.SHA256()
+        ),
+        algorithm=hashes.SHA256(),
+        label=None,
+    ),
+)
+
+rsa_plaintext = rsa_private_key.decrypt(
+    rsa_ciphertext,
+    padding.OAEP(
+        mgf=padding.MGF1(
+            algorithm=hashes.SHA256()
+        ),
+        algorithm=hashes.SHA256(),
+        label=None,
+    ),
+)

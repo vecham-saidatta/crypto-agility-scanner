@@ -296,3 +296,26 @@ def test_report_contains_cbom():
         "key_size": 2048,
         "public_exponent": 65537,
     }
+def test_report_detects_supported_languages_only():
+
+    files = [
+        Path("example.py"),
+        Path("Example.java"),
+        Path("config.yaml"),
+        Path("README.md"),
+        Path("image.png"),
+    ]
+
+    report = ReportGenerator().generate(
+        files=files,
+        findings=[],
+    )
+
+    assert (
+        report["summary"]["languages_detected"]
+        == [
+            "config",
+            "java",
+            "python",
+        ]
+    )
